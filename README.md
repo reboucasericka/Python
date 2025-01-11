@@ -1,62 +1,167 @@
-# WhatsApp Group API on Selenium
-Easy to use API on selenium to have control of a WhatsApp group using the web browser. 
+# WhatsApp Group Chatbox API on Selenium
 
-### Implemented features
-- Get all contacts from a selected group
-```
-In [1]: from whatsapp_api import WhatsApp
-In [2]: wp = WhatsApp()
-Loading...
-Please scan the QR Code and enter in the group
-In [3]: wp.get_group_numbers()
-```
-- Write and/or send messages
-```
-In [1]: from whatsapp_api import WhatsApp
-In [2]: wp = WhatsApp()
-Loading...
-Please scan the QR Code and enter in the group
-In [3]: wp.send_message('This message is going to be sent')
-In [4]: wp.write_message('This message is going to be written but not sent')
-```
-- Search for a contact given a keyword (phone number or name)
-```
-In [1]: from whatsapp_api import WhatsApp
-In [2]: wp = WhatsApp()
-Loading...
-Please scan the QR Code and enter in the group
-In [3]: wp.search_contact('+55000000000')
-```
-- Phone number parser to the same standard for performing set operations:
-```
-    >>> group_numbers = wp.get_group_numbers()
-    >>> group_numbers = wp.parser(group_numbers[:-1]) # Remove last contact which is not a number ('You')
-    >>> all_numbers = [...]
-    >>> # Numbers should start with the country code, for example +55
-    >>> all_numbers = wp.parser(all_numbers)
-    >>> not_joined = all_numbers - group_numbers
+<div style="text-align: justify;">
+
+> **Status:** Em Desenvolvimento ⚠️  
+> Este repositório fornece uma API para automação do WhatsApp utilizando Selenium. A API é projetada para interagir com grupos do WhatsApp por meio do navegador web, permitindo o envio e recebimento de mensagens, busca de contatos, e integração com chatbots personalizados.
+
+---
+
+## Funcionalidades Implementadas
+
+### **Controle de Grupos**
+- **Obter contatos de um grupo:**  
+  Recupera uma lista de números de telefone de todos os membros do grupo.
+  ```python
+  from whatsapp_api import WhatsApp
+  wp = WhatsApp()
+  print(wp.get_group_numbers())
+  ```
+
+- **Pesquisar contato:**  
+  Localiza contatos em um grupo com base em um número de telefone ou nome.
+  ```python
+  wp.search_contact('+55000000000')
+  ```
+
+- **Parser de números:**  
+  Uniformiza números de telefone para permitir operações em conjuntos (ex.: verificar quais contatos não estão no grupo).
+  ```python
+  group_numbers = wp.get_group_numbers()
+  parsed_numbers = wp.parser(group_numbers[:-1])  # Remove o contato 'Você'
+  ```
+
+---
+
+### **Envio e Recebimento de Mensagens**
+- **Enviar mensagens para o grupo:**  
+  Escreve e envia mensagens para o grupo selecionado.
+  ```python
+  wp.send_message('Olá, grupo! Esta é uma mensagem automática.')
+  ```
+
+- **Escrever mensagens sem enviar:**  
+  Escreve a mensagem no campo de texto, mas não a envia (útil para revisão manual).
+  ```python
+  wp.write_message('Esta mensagem foi escrita, mas não enviada.')
+  ```
+
+- **Receber a última mensagem:**  
+  Obtém a mensagem mais recente do grupo.
+  ```python
+  last_message = wp.get_last_message()
+  print(last_message)
+  ```
+
+- **Obter todas as mensagens:**  
+  Recupera todas as mensagens do grupo, permitindo análises ou ações baseadas em texto.
+  ```python
+  all_messages = wp.get_all_messages()
+  print(all_messages)
+  ```
+
+---
+
+### **Chatbot Personalizado**
+- **Interação automatizada:**  
+  Crie um loop de interação para responder automaticamente com base no conteúdo das mensagens recebidas.
+  ```python
+  while True:
+      last_message = wp.get_last_message()
+      if "Olá" in last_message:
+          wp.send_message("Olá! Como posso ajudar?")
+  ```
+
+---
+
+## Requisitos
+
+1. **Dependências do Python:**  
+   Instale o Selenium:
+   ```bash
+   pip install selenium
+   ```
+
+2. **ChromeDriver:**  
+   Baixe o ChromeDriver compatível com a versão do seu navegador em: [ChromeDriver](http://chromedriver.chromium.org/).  
+   Adicione o executável do ChromeDriver a uma pasta acessível no PATH do sistema.
+
+3. **QRCode do WhatsApp Web:**  
+   A API exige que o usuário escaneie o QR Code para acessar o WhatsApp Web no início da sessão.
+
+---
+
+## Estrutura do Projeto
+
+```plaintext
+whatsapp-group-api/
+│
+├── src/
+│   ├── whatsapp_api.py    # Código principal da API
+│   ├── chatbot.py         # Exemplo de chatbot personalizado
+│   └── utils.py           # Funções auxiliares (ex.: parsing de números)
+│
+├── requirements.txt       # Lista de dependências
+├── README.md              # Documentação do projeto
+└── chromedriver.exe       # Executável do ChromeDriver (se necessário)
 ```
 
-- Get last message
-```
-    >>> wp.get_last_message()
-```
+---
 
-- Get all messages
-```
-    >>> wp.get_all_messages()
-```
+## Instruções de Uso
 
-### Tutorial on Udemy (in Portuguese)
-- https://www.udemy.com/course/aprenda-a-programar-um-bot-do-whatsapp/?couponCode=PRECOMINIMO
+1. Clone este repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/whatsapp-group-api.git
+   ```
 
-### Possible future features
-- ?
+2. Instale as dependências:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Requirements
-- Selenium: `pip install selenium`
-- ChromeDriver: http://chromedriver.chromium.org/
-    - After downloading chromedriver, make sure to add in a folder accessible from the PATH
+3. Configure o ChromeDriver no PATH do sistema.
 
-### LICENSE
-MIT
+4. Execute um exemplo:
+   ```python
+   from whatsapp_api import WhatsApp
+
+   wp = WhatsApp()
+   wp.send_message('Olá, grupo! Esta é uma mensagem automática.')
+   ```
+
+---
+
+## Limitações e Considerações
+
+1. **Restrições do WhatsApp Web:**  
+   - O WhatsApp pode bloquear sua conta se detectar uso indevido de automação.
+   - Evite enviar mensagens em massa ou realizar operações de spam.
+
+2. **Sessão expirada:**  
+   - Caso o QR Code expire, reinicie a aplicação para escanear novamente.
+
+3. **Compatibilidade com Navegador:**  
+   - Certifique-se de que sua versão do Chrome e do ChromeDriver sejam compatíveis.
+
+---
+
+## Próximos Passos
+
+- Implementar suporte para múltiplos grupos simultaneamente.
+- Adicionar persistência de sessões para evitar reescanear o QR Code.
+- Melhorar o tratamento de erros e logs.
+
+---
+
+## Contribuição
+
+Contribuições são bem-vindas! Sinta-se à vontade para abrir **issues** ou enviar um **pull request**.
+
+---
+
+## Licença
+
+Este projeto está licenciado sob a [MIT License](LICENSE).
+
+</div>
