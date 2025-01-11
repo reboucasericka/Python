@@ -1,43 +1,27 @@
-"""
-NOTE: This example has been presented at the following course: https://www.udemy.com/course/aprenda-a-programar-um-bot-do-whatsapp
-"""
-
-# Importar pacotes necessarios
 from time import sleep
 from whatsapp_api import WhatsApp
-
-# Inicializar o whatsapp
+# Inicializar o WhatsApp
 wp = WhatsApp()
-
-# Esperar que enter seja pressionado
-input("Pressione enter apos escanear o QR Code")
-
-# Lista de nomes ou nomeros de telefone a serem pesquisados
-# IMPORTANTE: O nome deve ser nao ambiguo pois ele retornara o primeiro resultado
-nomes_palavras_chaves = ['Luciano Bot', 'Aline Bot', 'Beatriz Bot', 
-                         'Joao Bot', 'Maria Bot', 'Pedro Bot']
-
-# Lista dos nomes que vou me referir na mensagem
-# primeiros_nomes = [n.split(' ')[0] for n in nomes_palavras_chaves]
-primeiros_nomes = ['Luciano', 'Aline', 'Beatriz', 'Joao', 
-                   'Maria', 'Pedro']
-
-lista_produtos = ['acucar', 'feijao', 'bicicleta', 'cenoura', 'abacate', 'beringela']
-
-# Loop para mandar mensagens para os clientes
-for primeiro_nome, nome_pesquisar, produto \
-  in zip(primeiros_nomes, nomes_palavras_chaves, lista_produtos):
-    
-    # Pesquisar pelo contato e esperar um pouco
-    wp.search_contact(nome_pesquisar)
+# Aguardar o login
+input("Pressione ENTER após escanear o QR Code")
+# Buscar todos os contatos disponíveis na agenda do WhatsApp
+agenda = wp.get_all_contacts()  # Supondo que a API tenha esse método
+# Lista de produtos a ser enviada
+lista_produtos = ['1', '2', '3', '4', '4', '5']
+# Verificar se a lista de produtos é menor ou igual à quantidade de contatos
+if len(lista_produtos) > len(agenda):
+    print("A {lista de produtos} excede o número de contatos na agenda!")
+    exit()
+# Loop para enviar mensagens
+for contato, produto in zip(agenda, lista_produtos):
+    # Nome do contato
+    primeiro_nome = contato.split(' ')[0]  # Pegando o primeiro nome, se aplicável
+    # Pesquisar pelo contato
+    wp.search_contact(contato)
     sleep(2)
-    
-    # Mensagem a ser enviada
+    # Mensagem personalizada
     mensagem = f"Olá {primeiro_nome}! Obrigado por comprar o produto {produto}!"
-    
-    # Enviar mensagem
     wp.send_message(mensagem)
-
-# Esperar 10 segundos e fechar
+# Aguardar antes de fechar o driver
 sleep(10)
 wp.driver.close()
